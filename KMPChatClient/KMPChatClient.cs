@@ -168,47 +168,48 @@ namespace KMPChatClient
                     break;
                     
                 case ServerMessageID.PLUGIN_UPDATE:
-                    Console.WriteLine("Unhandled Message: PLUGIN_UPDATE");
+                    //Console.WriteLine("Unhandled Message: PLUGIN_UPDATE");
                     break;
                     
                 case ServerMessageID.SERVER_SETTINGS:
-                    Console.WriteLine("Unhandled Message: SERVER_SETTINGS");
+                    //Console.WriteLine("Unhandled Message: SERVER_SETTINGS");
                     break;
                     
                 case ServerMessageID.SCREENSHOT_SHARE:
-                    Console.WriteLine("Unhandled Message: SCREENSHOT_SHARE");
+                    //Console.WriteLine("Unhandled Message: SCREENSHOT_SHARE");
                     break;
                     
                 case ServerMessageID.KEEPALIVE:
-                    Console.WriteLine("Unhandled Message: KEEPALIVE");
+                    //Console.WriteLine("Unhandled Message: KEEPALIVE");
                     break;
                     
                 case ServerMessageID.CONNECTION_END:
-                    Console.WriteLine("Unhandled Message: CONNECTION_END");
+				    Console.WriteLine("The server sent a connection end message. You probably want to try to reconnect now.");
+                    //Console.WriteLine("Unhandled Message: CONNECTION_END");
                     break;
                     
                 case ServerMessageID.UDP_ACKNOWLEDGE:
-                    Console.WriteLine("Unhandled Message: UDP_ACKNOWLEDGE");
+                    //Console.WriteLine("Unhandled Message: UDP_ACKNOWLEDGE");
                     break;                    
                     
                 case ServerMessageID.NULL:
-                    Console.WriteLine("Unhandled Message: NULL");
+                    //Console.WriteLine("Unhandled Message: NULL");
                     break;
                     
                 case ServerMessageID.CRAFT_FILE:
-                    Console.WriteLine("Unhandled Message: CRAFT_FILE");
+                    //Console.WriteLine("Unhandled Message: CRAFT_FILE");
                     break;
                     
                 case ServerMessageID.PING_REPLY:
-                    Console.WriteLine("Unhandled Message: PING_REPLY");
+                    //Console.WriteLine("Unhandled Message: PING_REPLY");
                     break;
                    
                 case ServerMessageID.SYNC:
-                    Console.WriteLine("Unhandled Message: SYNC");
+                    //Console.WriteLine("Unhandled Message: SYNC");
                     break;
                     
                 case ServerMessageID.SYNC_COMPLETE:
-                    Console.WriteLine("Unhandled Message: SYNC_COMPLETE");
+                    //Console.WriteLine("Unhandled Message: SYNC_COMPLETE");
                     break;
 
                     }
