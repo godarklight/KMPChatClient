@@ -45,6 +45,9 @@ namespace KMPChatClient
                 String address = Console.ReadLine();
                 Console.WriteLine("Type the Port of the KMP Server: ");
                 String port = Console.ReadLine();
+				if (port == "") {
+					port = "2076";
+				}
                 connectToServer(address, port);
             } else {
                 username = args[0];
