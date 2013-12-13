@@ -1,3 +1,9 @@
-This is a beyond dirty CLI program to connect to KMP servers to chat. I'm not sure how exactly this would be useful, but anyway.
+This is a command line program to connect to KMP servers and chat. It's useful for linux users because of the unity typing bug.
 
-Because of my lazyness you will need to copy "KMPPlayerToken.txt" into the same directory as the program. If you're worried about this program stealing it, make a new guid first.
+This will connect to the server straight away:
+mono KMPChatClient.exe username server_ip server_port
+
+This will ask for info after starting:
+mono KMPChatClient.exe
+
+The program will automatically create a new GUID if it needs to.
