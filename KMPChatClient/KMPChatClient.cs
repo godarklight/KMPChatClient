@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using ICSharpCode.SharpZipLib.GZip;
+using System.Runtime.Serialization.Formatters.Binary;
  
 namespace KMPChatClient
 {
@@ -19,6 +20,7 @@ namespace KMPChatClient
         static Thread receieveThread;
         static Thread sendThread;
         static byte[] receive_buffer = new byte[8192];
+		static bool receivedServerSettings = false;
         //static string data;
         //static byte receive_buffer = new byte();
         //static byte send_buffer = new byte();
@@ -69,6 +71,7 @@ namespace KMPChatClient
                     receieveThread.Start();
                     sendThread = new Thread(new ThreadStart(keepConnectionAlive));
                     sendThread.Start();
+
                     chatLoop();
                 }
             }
@@ -88,19 +91,31 @@ namespace KMPChatClient
             }
             
         }
+
+		static void printIfDebug(string data) {
+#if DEBUG
+			Console.WriteLine(data);
+#endif
+		}
         
         static void keepConnectionAlive() {
             Console.WriteLine("KeepAlive thread started");
             while (true) {
-                byte[] empty_data = new byte[0];
-                sendMessage(ClientMessageID.NULL, empty_data);
-                Thread.Sleep(100);
+				String[] status_array = new String[2];
+				status_array[0] = username;
+				status_array[1] = "Chatting from Chat Client";
+				MemoryStream ms = new MemoryStream();
+				BinaryFormatter bf = new BinaryFormatter();
+				bf.Serialize(ms, status_array);
+				byte[] keepalive_data = ms.ToArray();
+				sendMessage(ClientMessageID.PRIMARY_PLUGIN_UPDATE, keepalive_data);
+                Thread.Sleep(1000);
             }
         }
 
         
         static void handleConnection() {
-            Console.WriteLine("Receieve thread started");
+            Console.WriteLine("Receive thread started");
             int received_buffer_length = 0;
             int received_message_index = 0;
             int message_id = 0;
@@ -168,48 +183,51 @@ namespace KMPChatClient
                     break;
                     
                 case ServerMessageID.PLUGIN_UPDATE:
-                    //Console.WriteLine("Unhandled Message: PLUGIN_UPDATE");
+                    printIfDebug("Unhandled Message: PLUGIN_UPDATE");
                     break;
                     
-                case ServerMessageID.SERVER_SETTINGS:
-                    //Console.WriteLine("Unhandled Message: SERVER_SETTINGS");
-                    break;
+				case ServerMessageID.SERVER_SETTINGS:
+					printIfDebug ("Unhandled Message: SERVER_SETTINGS");
+					if (receivedServerSettings == false) {
+						receivedServerSettings = true;
+						sendSyncRequest ();
+					}
+				    break;
                     
                 case ServerMessageID.SCREENSHOT_SHARE:
-                    //Console.WriteLine("Unhandled Message: SCREENSHOT_SHARE");
+                    printIfDebug("Unhandled Message: SCREENSHOT_SHARE");
                     break;
                     
                 case ServerMessageID.KEEPALIVE:
-                    //Console.WriteLine("Unhandled Message: KEEPALIVE");
+					printIfDebug("Unhandled Message: KEEPALIVE");
                     break;
                     
                 case ServerMessageID.CONNECTION_END:
 				    Console.WriteLine("The server sent a connection end message. You probably want to try to reconnect now.");
-                    //Console.WriteLine("Unhandled Message: CONNECTION_END");
                     break;
                     
                 case ServerMessageID.UDP_ACKNOWLEDGE:
-                    //Console.WriteLine("Unhandled Message: UDP_ACKNOWLEDGE");
-                    break;                    
+                    printIfDebug("Unhandled Message: UDP_ACKNOWLEDGE");
+				break;                    
                     
                 case ServerMessageID.NULL:
-                    //Console.WriteLine("Unhandled Message: NULL");
+                    printIfDebug("Unhandled Message: NULL");
                     break;
                     
                 case ServerMessageID.CRAFT_FILE:
-                    //Console.WriteLine("Unhandled Message: CRAFT_FILE");
+				    printIfDebug("Unhandled Message: CRAFT_FILE");
                     break;
                     
                 case ServerMessageID.PING_REPLY:
-                    //Console.WriteLine("Unhandled Message: PING_REPLY");
+                    printIfDebug("Unhandled Message: PING_REPLY");
                     break;
                    
                 case ServerMessageID.SYNC:
-                    //Console.WriteLine("Unhandled Message: SYNC");
-                    break;
+                    printIfDebug("Unhandled Message: SYNC");
+				    break;
                     
                 case ServerMessageID.SYNC_COMPLETE:
-                    //Console.WriteLine("Unhandled Message: SYNC_COMPLETE");
+                    printIfDebug("Unhandled Message: SYNC_COMPLETE");
                     break;
 
                     }
@@ -229,8 +247,12 @@ namespace KMPChatClient
             guid_bytes.CopyTo(handshake_data, 4 + username_bytes.Length + 4);
             version_bytes.CopyTo(handshake_data, 4 + username_bytes.Length + 4 + guid_bytes.Length);
             sendMessage(ClientMessageID.HANDSHAKE, handshake_data);
-        }      
-        
+        }
+
+		static void sendSyncRequest() {
+		    byte[] update_bytes = BitConverter.GetBytes(-1);
+		    sendMessage(ClientMessageID.SSYNC, update_bytes);
+		}
         
         static void sendMessage(ClientMessageID id,  byte[] data) {
             lock (SendLock) {
