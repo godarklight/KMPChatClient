@@ -154,7 +154,7 @@ namespace KMPChatClient
                     }
                     
                 }
-            Thread.Sleep(1000);
+            Thread.Sleep(10);
             }
         }
 
@@ -187,7 +187,7 @@ namespace KMPChatClient
                     break;
                     
 				case ServerMessageID.SERVER_SETTINGS:
-					printIfDebug ("Unhandled Message: SERVER_SETTINGS");
+					printIfDebug("Unhandled Message: SERVER_SETTINGS");
 					if (receivedServerSettings == false) {
 						receivedServerSettings = true;
 						sendSyncRequest ();
