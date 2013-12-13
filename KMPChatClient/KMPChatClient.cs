@@ -27,7 +27,15 @@ namespace KMPChatClient
 
         static void Main(string[] args)
         {
-            token = new Guid(File.ReadAllLines("KMPPlayerToken.txt")[0]);
+			if (File.Exists ("KMPPlayerToken.txt")) {
+				token = new Guid (File.ReadAllLines ("KMPPlayerToken.txt") [0]);
+			} else {
+				token = Guid.NewGuid();
+				using (FileStream fs = File.Create("KMPPlayerToken.txt")) {
+					Byte[] info = encoder.GetBytes(token.ToString());
+					fs.Write(info, 0, info.Length);
+				}
+			}
             Console.WriteLine(username);
             if (args.Length != 3)
             {
