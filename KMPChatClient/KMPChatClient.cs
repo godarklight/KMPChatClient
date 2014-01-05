@@ -127,7 +127,7 @@ namespace KMPChatClient
 
 		static void keepConnectionAlive ()
 		{
-			Console.WriteLine ("KeepAlive thread started");
+			printIfDebug ("KeepAlive thread started");
 			while (sendThreadRunning && !quitAllThreads) {
 				String[] status_array = new String[2];
 				status_array [0] = username;
@@ -143,7 +143,7 @@ namespace KMPChatClient
 
 		static void handleConnection ()
 		{
-			Console.WriteLine ("Receive thread started");
+			printIfDebug ("Receive thread started");
 			int received_buffer_length = 0;
 			int received_message_index = 0;
 			int message_id = 0;
@@ -155,7 +155,7 @@ namespace KMPChatClient
 					received_buffer_length = chatTCPSocket.Receive (receive_buffer, 8 - received_message_index, SocketFlags.None);
 					received_message_index = received_message_index + received_buffer_length;
 					if (received_message_index == 8) {
-						Console.WriteLine ("Receiving header");
+						printIfDebug ("Receiving header");
 						message_id = BitConverter.ToInt32 (receive_buffer, 0);
 						message_size = BitConverter.ToInt32 (receive_buffer, 4);
 						if (message_size != 0) {
@@ -168,7 +168,7 @@ namespace KMPChatClient
 				if (header_received == true) {
 					byte[] received_message = new byte[message_size];
 					while (received_message_index < message_size) {
-						Console.WriteLine ("Receiving message");
+						printIfDebug ("Receiving message");
 						int bytes_to_receive = Math.Min (8192, message_size - received_message_index);
 						received_buffer_length = chatTCPSocket.Receive (receive_buffer, bytes_to_receive, SocketFlags.None);
 						Array.Copy (receive_buffer, 0, received_message, received_message_index, received_buffer_length);
@@ -195,7 +195,7 @@ namespace KMPChatClient
 			case ServerMessageID.HANDSHAKE:
 				Console.WriteLine ("Got Handshake - Replying");
 				int server_net_protocol = BitConverter.ToInt32 (message_data, 0);
-				Console.WriteLine ("Net protocol: " + server_net_protocol);
+				printIfDebug ("Net protocol: " + server_net_protocol);
 				if (server_net_protocol >= MIN_NET_PROTOCOL && server_net_protocol <= MAX_NET_PROTOCOL) {
 					sendHandshake ();
 				} else {
