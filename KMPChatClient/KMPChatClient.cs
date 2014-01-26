@@ -12,13 +12,12 @@ namespace KMPChatClient
 	class ChatClient
 	{
 		static int MIN_NET_PROTOCOL = 10011;
-		static int MAX_NET_PROTOCOL = 10011;
+		static int MAX_NET_PROTOCOL = 10014;
 		static Socket chatTCPSocket;
 		static String username;
 		static Guid token;
 		static Object SendLock = new Object ();
 		static String program_version = "0.1.5.0";
-		static UnicodeEncoding encoder = new UnicodeEncoding ();
 		static Thread receiveThread;
 		static Thread sendThread;
 		static byte[] receive_buffer = new byte[8192];
@@ -37,7 +36,7 @@ namespace KMPChatClient
 			} else {
 				token = Guid.NewGuid ();
 				using (FileStream fs = File.Create("KMPPlayerToken.txt")) {
-					Byte[] info = encoder.GetBytes (token.ToString ());
+					Byte[] info = Encoding.UTF8.GetBytes (token.ToString ());
 					fs.Write (info, 0, info.Length);
 				}
 			}
@@ -105,10 +104,10 @@ namespace KMPChatClient
 			while (chatLoopRunning && !quitAllThreads) {
 				string newChatText = Console.ReadLine ();
 				if (newChatText != "/quit") {
-					byte[] newChatText_bytes = encoder.GetBytes (newChatText);
+					byte[] newChatText_bytes = Encoding.Unicode.GetBytes (newChatText);
 					sendMessage (ClientMessageID.TEXT_MESSAGE, newChatText_bytes);
 				} else {
-					sendMessage (ClientMessageID.CONNECTION_END, encoder.GetBytes("Quit"));
+					sendMessage (ClientMessageID.CONNECTION_END, Encoding.Unicode.GetBytes("Quit"));
 					sendThreadRunning = false;
 					receiveThreadRunning = false;
 					receiveThread.Abort ();
@@ -283,9 +282,9 @@ namespace KMPChatClient
 
 		static void sendHandshake ()
 		{
-			byte[] username_bytes = encoder.GetBytes (username);
-			byte[] guid_bytes = encoder.GetBytes (token.ToString ());
-			byte[] version_bytes = encoder.GetBytes (program_version);
+			byte[] username_bytes = Encoding.Unicode.GetBytes (username);
+			byte[] guid_bytes = Encoding.Unicode.GetBytes (token.ToString ());
+			byte[] version_bytes = Encoding.Unicode.GetBytes (program_version);
 			byte[] handshake_data = new byte[4 + username_bytes.Length + 4 + guid_bytes.Length + version_bytes.Length];
 			BitConverter.GetBytes (username_bytes.Length).CopyTo (handshake_data, 0);
 			username_bytes.CopyTo (handshake_data, 4);
