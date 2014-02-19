@@ -12,12 +12,12 @@ namespace KMPChatClient
 	class ChatClient
 	{
 		static int MIN_NET_PROTOCOL = 10011;
-		static int MAX_NET_PROTOCOL = 10014;
+		static int MAX_NET_PROTOCOL = 10016;
 		static Socket chatTCPSocket;
 		static String username;
 		static Guid token;
 		static Object SendLock = new Object ();
-		static String program_version = "0.1.5.0";
+		static String program_version = "0.1.6.0";
 		static Thread receiveThread;
 		static Thread sendThread;
 		static byte[] receive_buffer = new byte[8192];
